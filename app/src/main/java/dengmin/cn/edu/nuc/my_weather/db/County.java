@@ -1,6 +1,8 @@
 package dengmin.cn.edu.nuc.my_weather.db;
 
-public class County {
+import org.litepal.crud.DataSupport;
+
+public class County extends DataSupport{
     private int _id;
     private String countyName;
     private int countyCode;

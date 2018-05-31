@@ -1,6 +1,8 @@
 package dengmin.cn.edu.nuc.my_weather.db;
 
-public class Province {
+import org.litepal.crud.DataSupport;
+
+public class Province extends DataSupport{
     private int _id;
     private String provinceName;
     private int provinceCode;
