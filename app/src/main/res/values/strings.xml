@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">My_Weather</string>
+    <string name="app_name">出行助手</string>
+    <string name="title_activity_select_area">select_area</string>
 </resources>

@@ -1,5 +1,6 @@
-package dengmin.cn.edu.nuc.my_weather;
+package dengmin.cn.edu.nuc.my_weather.Activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-
+import dengmin.cn.edu.nuc.my_weather.R;
 import dengmin.cn.edu.nuc.my_weather.db.City;
 import dengmin.cn.edu.nuc.my_weather.db.County;
 import dengmin.cn.edu.nuc.my_weather.db.Province;
@@ -61,7 +60,7 @@ public class ChooseAreaFragment extends Fragment {
     private Province selectedProvince;
     private City selectedCity;
     private int currentLevel;
-
+    private String cityName;
     private View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,7 +86,18 @@ public class ChooseAreaFragment extends Fragment {
                     queryCities();
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
+                    cityName = cityList.get(position).getCityName();
                     queryCounties();
+                }else if(currentLevel == LEVEL_COUNTY){
+                    String weatherId = String.valueOf(countyList.get(position).getWeatherId());
+                    String countyName = countyList.get(position).getCountyName();
+                    Intent intent = getActivity().getIntent();
+                    intent.putExtra("weatherId",weatherId);
+                    intent.putExtra("countyName",countyName);
+                    intent.putExtra("cityName",cityName);
+                    Log.i(TAG, "onItemClick: "+weatherId+"|"+countyName+"|"+cityName);
+                    getActivity().setResult(Activity.RESULT_OK,intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -132,8 +142,8 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        Log.i(TAG, "provinceId = "+selectedProvince.get_id());
-        cityList = DataSupport.where("provindeId = ?", String.valueOf(selectedProvince.get_id())).find(City.class);
+        Log.i(TAG, "provinceId = "+selectedProvince.getId());
+        cityList = DataSupport.where("provinceid = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {
             dataList.clear();
             for (City city : cityList) {
@@ -156,7 +166,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCounties() {
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countyList = DataSupport.where("cityId = ?", String.valueOf(selectedCity.get_id())).find(County.class);
+        countyList = DataSupport.where("cityId = ?", String.valueOf(selectedCity.getId())).find(County.class);
         Log.i(TAG, "queryProvinces: listsize: "+provinceList.size());
         if (countyList.size() > 0) {
             dataList.clear();
@@ -189,11 +199,11 @@ public class ChooseAreaFragment extends Fragment {
                         break;
                     case "city":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = GetAreaWithGSON.handleCityResponse(responseText, selectedProvince.get_id());
+                        result = GetAreaWithGSON.handleCityResponse(responseText, selectedProvince.getId());
                         break;
                     case "county":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = GetAreaWithGSON.handleCountyResponse(responseText, selectedCity.get_id());
+                        result = GetAreaWithGSON.handleCountyResponse(responseText, selectedCity.getId());
                         break;
                     default:
                         Log.i(TAG, "onResponse: default"+type);

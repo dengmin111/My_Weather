@@ -3,16 +3,18 @@ package dengmin.cn.edu.nuc.my_weather.db;
 import org.litepal.crud.DataSupport;
 
 public class Province extends DataSupport{
-    private int _id;
+    private int id;
+
     private String provinceName;
+
     private int provinceCode;
 
-    public int get_id() {
-        return _id;
+    public int getId() {
+        return id;
     }
 
-    public void set_id(int _id) {
-        this._id = _id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getProvinceName() {

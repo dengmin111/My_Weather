@@ -4,6 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.MainActivity">
+    tools:context=".Activity.select_area">
 
+    <fragment
+        android:id="@+id/choose_area_fragment"
+        android:name="dengmin.cn.edu.nuc.my_weather.Activity.ChooseAreaFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </FrameLayout>

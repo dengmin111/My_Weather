@@ -3,17 +3,20 @@ package dengmin.cn.edu.nuc.my_weather.db;
 import org.litepal.crud.DataSupport;
 
 public class City extends DataSupport{
-    private int _id;
-    private String cityName;
-    private int cityCode;
-    private int provindeId;
+    private int id;
 
-    public int get_id() {
-        return _id;
+    private String cityName;
+
+    private int cityCode;
+
+    private int provinceId;
+
+    public int getId() {
+        return id;
     }
 
-    public void set_id(int _id) {
-        this._id = _id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getCityName() {
@@ -32,11 +35,11 @@ public class City extends DataSupport{
         this.cityCode = cityCode;
     }
 
-    public int getProvindeId() {
-        return provindeId;
+    public int getProvinceId() {
+        return provinceId;
     }
 
-    public void setProvindeId(int provindeId) {
-        this.provindeId = provindeId;
+    public void setProvinceId(int provinceId) {
+        this.provinceId = provinceId;
     }
 }

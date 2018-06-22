@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dengmin.cn.edu.nuc.my_weather">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
@@ -11,13 +12,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activity.mWeather" />
+        <activity android:name=".Activity.Look_Event" />
+        <activity android:name=".Activity.New_Event" />
+        <activity android:name=".Activity.Setting" />
+        <activity
+            android:name=".Activity.select_area"
+            android:label="@string/title_activity_select_area"
+            android:theme="@style/AppTheme" />
+
+        <service
+            android:name=".service.Auto_Update_Service"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.Event_remind_Service"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
