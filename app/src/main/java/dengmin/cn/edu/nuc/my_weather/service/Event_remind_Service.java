@@ -40,7 +40,7 @@ public class Event_remind_Service extends Service {
         int once = 24*60*60*1000;
         long triggerAtTime = SystemClock.elapsedRealtime()+once;
         Intent intent1 = new Intent(this,Auto_Update_Service.class);
-        PendingIntent pi = PendingIntent.getService(this,0,intent,0);
+        PendingIntent pi = PendingIntent.getService(Event_remind_Service.this,0,intent,0);
         manager.cancel(pi);
         //设置闹钟的执行模式，间隔时间和行为
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,triggerAtTime,pi);
@@ -50,7 +50,7 @@ public class Event_remind_Service extends Service {
     public void Query_event_remindtime(){
         Calendar calendar = Calendar.getInstance();
         String data = (String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)+String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));
-        eventList = DataSupport.where("reminddata=?", data).order("remindtime asc").find(Event.class);
+        eventList = DataSupport.where("data=?", data).order("remindtime asc").find(Event.class);
         for(Event event:eventList){
             int i=1;
             int remindtime = event.getRemindtime();

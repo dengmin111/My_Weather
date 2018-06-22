@@ -44,17 +44,17 @@ public class Auto_Update_Service extends Service {
         Intent intent1 = new Intent(this,Auto_Update_Service.class);
         PendingIntent pi = PendingIntent.getService(this,0,intent1,0);
         manager.cancel(pi);
-        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(Auto_Update_Service.this);
-        builder.setContentTitle(weather.now.more.info);
-        builder.setContentText("天气已更新");
-        builder.setWhen(System.currentTimeMillis());
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-        builder.setContentIntent(pi);
-        builder.setAutoCancel(true);
-        Notification notification = builder.build();
-        notificationManager.notify(0,notification);
+//        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+//        Notification.Builder builder = new Notification.Builder(Auto_Update_Service.this);
+//        builder.setContentTitle(weather.now.more.info);
+//        builder.setContentText("天气已更新");
+//        builder.setWhen(System.currentTimeMillis());
+//        builder.setSmallIcon(R.mipmap.ic_launcher);
+//        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+//        builder.setContentIntent(pi);
+//        builder.setAutoCancel(true);
+//        Notification notification = builder.build();
+//        notificationManager.notify(0,notification);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,triggerAtTime,pi);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -82,5 +82,22 @@ public class Auto_Update_Service extends Service {
                 }
             });
         }
+    }
+    private void updateBingpic(){
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String bingPic = response.body().toString();
+                SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
+                editor.putString("bing_pic",bingPic);
+                editor.apply();
+            }
+        });
     }
 }

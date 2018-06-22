@@ -6,4 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".Activity.MainActivity">
 
+    <ImageView
+        android:id="@+id/welcome_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
 </FrameLayout>

@@ -63,14 +63,12 @@ public class Setting extends FragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        setWeatherID(data);
+        if(requestCode == RESULT_OK){
+            Toast.makeText(this,"手动定位成功",Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this,"请重新定位",Toast.LENGTH_LONG).show();
+        }
     }
-    public  void setWeatherID(Intent data){
-        SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
-        editor.putString("weatherId",data.getStringExtra("weatherId"));
-        editor.putString("cityName",data.getStringExtra("cityName"));
-        editor.putString("countyName",data.getStringExtra("countyName"));
-        editor.apply();
-    }
+
 
 }

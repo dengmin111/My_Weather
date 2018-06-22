@@ -2,7 +2,9 @@ package dengmin.cn.edu.nuc.my_weather.Activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,7 +22,6 @@ import dengmin.cn.edu.nuc.my_weather.R;
 import dengmin.cn.edu.nuc.my_weather.db.City;
 import dengmin.cn.edu.nuc.my_weather.db.County;
 import dengmin.cn.edu.nuc.my_weather.db.Province;
-import dengmin.cn.edu.nuc.my_weather.util.GetAreaWithGSON;
 import dengmin.cn.edu.nuc.my_weather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dengmin.cn.edu.nuc.my_weather.util.Query_Area;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -91,12 +93,20 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(currentLevel == LEVEL_COUNTY){
                     String weatherId = String.valueOf(countyList.get(position).getWeatherId());
                     String countyName = countyList.get(position).getCountyName();
+
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences("data", Context.MODE_PRIVATE).edit();
+                    editor.putString("weatherId",weatherId);
+                    editor.putString("cityName",cityName);
+                    editor.putString("countyName",countyName);
+                    editor.apply();
+
                     Intent intent = getActivity().getIntent();
-                    intent.putExtra("weatherId",weatherId);
-                    intent.putExtra("countyName",countyName);
-                    intent.putExtra("cityName",cityName);
+                    if(weatherId != null){
+                        getActivity().setResult(Activity.RESULT_OK);
+                    }else {
+                        getActivity().setResult(Activity.RESULT_CANCELED);
+                    }
                     Log.i(TAG, "onItemClick: "+weatherId+"|"+countyName+"|"+cityName);
-                    getActivity().setResult(Activity.RESULT_OK,intent);
                     getActivity().finish();
                 }
             }
@@ -185,7 +195,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
 
-    private void queryFromServer(String address, final String type) {
+    private void queryFromServer(final String address, final String type) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
@@ -195,15 +205,15 @@ public class ChooseAreaFragment extends Fragment {
                 switch (type){
                     case "province":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = GetAreaWithGSON.handleProvinceResponse(responseText);
+                        result = Query_Area.QueryFromWeb(address,type,0);
                         break;
                     case "city":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = GetAreaWithGSON.handleCityResponse(responseText, selectedProvince.getId());
+                        result = Query_Area.QueryFromWeb(address,type,selectedProvince.getId());
                         break;
                     case "county":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = GetAreaWithGSON.handleCountyResponse(responseText, selectedCity.getId());
+                        result = Query_Area.QueryFromWeb(address,type,selectedCity.getId());
                         break;
                     default:
                         Log.i(TAG, "onResponse: default"+type);
@@ -215,12 +225,13 @@ public class ChooseAreaFragment extends Fragment {
                         @Override
                         public void run() {
                             closeProgressDialog();
-                            if ("province".equals(type)) {
-                                queryProvinces();
-                            } else if ("city".equals(type)) {
-                                queryCities();
-                            } else if ("county".equals(type)) {
-                                queryCounties();
+                            switch (type){
+                                case "province":
+                                    queryProvinces();
+                                case "city":
+                                    queryCities();
+                                case "county":
+                                    queryCounties();
                             }
                         }
                     });
