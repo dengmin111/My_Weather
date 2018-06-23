@@ -1,5 +1,6 @@
 package dengmin.cn.edu.nuc.my_weather.service;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -15,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v4.content.ContextCompat;
 
 import org.litepal.crud.DataSupport;
 
@@ -79,9 +81,24 @@ public class Event_remind_Service extends Service {
             notification.ledOffMS = 1000;// 指定 LED 灯暗去的时长，也是以毫秒为单位
             notification.flags = Notification.FLAG_SHOW_LIGHTS;// 指定通知的一些行为，
 
-            manager.notify(i,notification);
             alarmManager.set(AlarmManager.RTC_WAKEUP,selectTime,pi);
+            manager.notify(i,notification);
 
+            switch (event.getHz()){
+                case "仅一次":
+                    DataSupport.delete(Event.class,event.getId());
+                    break;
+                case "一小时":
+                    event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
+                            +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)+1));
+                    break;
+                case "两小时":
+                    event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
+                            +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)+1));
+                    break;
+            }
+            event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
+                    +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));
         }
     }
     private long start_remind(int remindtime){

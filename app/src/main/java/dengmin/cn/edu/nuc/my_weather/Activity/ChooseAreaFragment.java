@@ -18,10 +18,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+
 import dengmin.cn.edu.nuc.my_weather.R;
 import dengmin.cn.edu.nuc.my_weather.db.City;
 import dengmin.cn.edu.nuc.my_weather.db.County;
 import dengmin.cn.edu.nuc.my_weather.db.Province;
+import dengmin.cn.edu.nuc.my_weather.util.GetAreaWithGSON;
 import dengmin.cn.edu.nuc.my_weather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
@@ -30,10 +34,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dengmin.cn.edu.nuc.my_weather.util.Query_Area;
+import javax.xml.transform.Result;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 public class ChooseAreaFragment extends Fragment {
 
@@ -62,12 +69,13 @@ public class ChooseAreaFragment extends Fragment {
     private Province selectedProvince;
     private City selectedCity;
     private int currentLevel;
-    private String cityName;
+
     private View view;
+    private String cityName;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       view = inflater.inflate(R.layout.choose_area, container, false);
+        view = inflater.inflate(R.layout.choose_area, container, false);
         titleText =  view.findViewById(R.id.title_text);
         backButton = view.findViewById(R.id.back_btn);
         listView = view.findViewById(R.id.list_view);
@@ -91,7 +99,7 @@ public class ChooseAreaFragment extends Fragment {
                     cityName = cityList.get(position).getCityName();
                     queryCounties();
                 }else if(currentLevel == LEVEL_COUNTY){
-                    String weatherId = String.valueOf(countyList.get(position).getWeatherId());
+                    String  weatherId = countyList.get(position).getWeatherId();
                     String countyName = countyList.get(position).getCountyName();
 
                     SharedPreferences.Editor editor = getActivity().getSharedPreferences("data", Context.MODE_PRIVATE).edit();
@@ -153,7 +161,7 @@ public class ChooseAreaFragment extends Fragment {
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
         Log.i(TAG, "provinceId = "+selectedProvince.getId());
-        cityList = DataSupport.where("provinceid = ?", String.valueOf(selectedProvince.getId())).find(City.class);
+        cityList = DataSupport.where("provinceId = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {
             dataList.clear();
             for (City city : cityList) {
@@ -195,7 +203,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
 
-    private void queryFromServer(final String address, final String type) {
+    private void queryFromServer(String address, final String type) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
@@ -205,15 +213,15 @@ public class ChooseAreaFragment extends Fragment {
                 switch (type){
                     case "province":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = Query_Area.QueryFromWeb(address,type,0);
+                        result = GetAreaWithGSON.handleProvinceResponse(responseText);
                         break;
                     case "city":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = Query_Area.QueryFromWeb(address,type,selectedProvince.getId());
+                        result = GetAreaWithGSON.handleCityResponse(responseText, selectedProvince.getId());
                         break;
                     case "county":
                         Log.i(TAG, "onResponse: type : "+type);
-                        result = Query_Area.QueryFromWeb(address,type,selectedCity.getId());
+                        result = GetAreaWithGSON.handleCountyResponse(responseText, selectedCity.getId());
                         break;
                     default:
                         Log.i(TAG, "onResponse: default"+type);
@@ -225,13 +233,12 @@ public class ChooseAreaFragment extends Fragment {
                         @Override
                         public void run() {
                             closeProgressDialog();
-                            switch (type){
-                                case "province":
-                                    queryProvinces();
-                                case "city":
-                                    queryCities();
-                                case "county":
-                                    queryCounties();
+                            if ("province".equals(type)) {
+                                queryProvinces();
+                            } else if ("city".equals(type)) {
+                                queryCities();
+                            } else if ("county".equals(type)) {
+                                queryCounties();
                             }
                         }
                     });

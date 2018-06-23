@@ -207,7 +207,6 @@ public class mWeather extends AppCompatActivity {
         switch (requestCode) {
             case 5:
                 if (resultCode == RESULT_OK) {
-                    weatherId = data.getStringExtra("weatherId");
                     setWeatherID(data);
                     onRestart();
                 } else {

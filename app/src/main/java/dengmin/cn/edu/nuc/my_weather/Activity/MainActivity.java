@@ -2,6 +2,7 @@ package dengmin.cn.edu.nuc.my_weather.Activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,7 +24,7 @@ import dengmin.cn.edu.nuc.my_weather.service.Location;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private Intent intent2;
     private static final String TAG = "test";
     @InjectView(R.id.welcome_iv)
     ImageView welcomeIv;
@@ -35,31 +36,36 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
 
-        List<String> permissionList = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//        List<String> permissionList = new ArrayList<>();
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+//                PackageManager.PERMISSION_GRANTED) {
+//            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//        }
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=
+//                PackageManager.PERMISSION_GRANTED) {
+//            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+//        }
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+//                PackageManager.PERMISSION_GRANTED) {
+//            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        }
+//        if (!permissionList.isEmpty()) {
+//            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+//            ActivityCompat.requestPermissions(this, permissions, 1);
+//        } else {
+//            Intent intent3 = new Intent(MainActivity.this, Location.class);
+//            startService(intent3);
+//        }
+//        Intent intent = new Intent(MainActivity.this, Auto_Update_Service.class);
+//        startService(intent);
+//        Intent intent1 = new Intent(MainActivity.this, Event_remind_Service.class);
+//        startService(intent1);
+        if(HaveWeather()){
+             intent2 = new Intent(MainActivity.this, Look_Event.class);
+
+        }else {
+            intent2 = new Intent(MainActivity.this,select_area.class);
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.READ_PHONE_STATE);
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        if (!permissionList.isEmpty()) {
-            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(this, permissions, 1);
-        } else {
-            Intent intent3 = new Intent(MainActivity.this, Location.class);
-            startService(intent3);
-        }
-        Intent intent = new Intent(MainActivity.this, Auto_Update_Service.class);
-        startService(intent);
-        Intent intent1 = new Intent(MainActivity.this, Event_remind_Service.class);
-        startService(intent1);
-        Intent intent2 = new Intent(MainActivity.this, Look_Event.class);
         startActivity(intent2);
         finish();
     }
@@ -84,7 +90,15 @@ public class MainActivity extends AppCompatActivity {
                 }
         }
     }
-
+    private boolean HaveWeather(){
+        boolean result = false;
+        SharedPreferences preferences = getSharedPreferences("data",MODE_PRIVATE);
+        if(preferences.getString("weatherId",null)!=null);
+        {
+            result = true;
+        }
+        return result;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 7 && resultCode == RESULT_CANCELED) {
