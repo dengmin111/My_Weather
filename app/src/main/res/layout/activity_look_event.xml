@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#f3e5f5"
+    android:background="#03a9f4"
     tools:context=".Activity.Look_Event">
 
     <LinearLayout
@@ -16,49 +16,71 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_marginTop="20dp"
             >
             <TextView
+
                 android:id="@+id/data_tv_event"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+
                 android:textSize="24sp"
-                android:background="#fff"
-                android:layout_weight="1"/>
+                android:textColor="#fff"
+                android:layout_marginLeft="50dp" />
             <TextView
                 android:id="@+id/weather_tv_event"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+
+                android:layout_marginLeft="50dp"
                 android:textSize="24sp"
-                android:background="#fff"
-                android:layout_weight="1"/>
+                android:textColor="#fff"
+                />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp">
-            <Button
-                android:id="@+id/new_event"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="新建"
-                android:gravity="center"
-                android:textSize="24sp"/>
-            <Button
-                android:id="@+id/select_event"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="查找"
-                android:gravity="center"
-                android:textSize="24sp"/>
-        </LinearLayout>
 
+            <ImageButton
+                android:id="@+id/new_event"
+                android:layout_width="154dp"
+                android:layout_height="54dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="30dp"
+                android:layout_weight="1"
+                android:background="@mipmap/event_btn"
+                android:gravity="center"
+                />
+
+            <ImageButton
+                android:id="@+id/select_event"
+                android:layout_width="154dp"
+                android:layout_height="54dp"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                android:layout_marginRight="20dp"
+                android:background="@mipmap/query"
+                android:gravity="center"
+                />
+        </LinearLayout>
+        <TextView
+            android:text="行程安排:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="20dp"
+            android:textColor="#fff"/>
         <ListView
+            android:background="#8000"
+            android:divider="#eeeeee"
+            android:dividerHeight="1dp"
+            android:layout_marginBottom="70dp"
+
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:id="@+id/look_event_lv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></ListView>

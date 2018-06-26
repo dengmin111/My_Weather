@@ -22,7 +22,8 @@ public class Query_Area {
     private static final String TAG = "Query_AreaFromWeb";
 
     private static boolean result = false;
-    public static Boolean QueryFromWeb(String address, final String type, final int id){
+    public static void QueryFromWeb(String address, final String type, final int id){
+        Log.i(TAG, "QueryFromWeb: 1 address"+address);
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -34,16 +35,19 @@ public class Query_Area {
                 String responseText = response.body().string();
                 switch (type){
                     case "province":
-                        Log.i(TAG, "onResponse: type : "+type);
+                        Log.i(TAG, "onResponse: type 1: "+type);
                         result = GetAreaWithGSON.handleProvinceResponse(responseText);
+                        Log.i(TAG, "onResponse: result 1"+result);
                         break;
                     case "city":
                         Log.i(TAG, "onResponse: type : "+type);
                         result = GetAreaWithGSON.handleCityResponse(responseText, id);
+                        Log.i(TAG, "onResponse: result 2"+result);
                         break;
                     case "county":
                         Log.i(TAG, "onResponse: type : "+type);
                         result = GetAreaWithGSON.handleCountyResponse(responseText, id);
+                        Log.i(TAG, "onResponse: result 3"+result);
                         break;
                     default:
                         Log.i(TAG, "onResponse: default"+type);
@@ -51,42 +55,45 @@ public class Query_Area {
                 }
             }
         });
-        return result;
     }
-    public static Province QueryFromDatabaseforProvince(String provinceName){
-        Province result = null;
+    public static int QueryFromDatabaseforProvince(String provinceName){
+        int result = 0;
         List<Province> provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
             for (Province province : provinceList) {
-                if (province.getProvinceName() == provinceName) {
-                    result = province;
+                //百度地图返回的数据时山西省而和风天气天气返回的数据是山西，这不就是个坑吗，下方两项同样如此
+                if (provinceName.contains(province.getProvinceName().toString())) {
+                    Log.i(TAG, "QueryFromDatabaseforProvince: true"+provinceName);
+                    result = province.getId();
                     break;
                 }
             }
         }
         return result;
     }
-    public static City QueryFromDatabaseforCity(String cityName,int provinceid){
-        City result = null;
+    public static int QueryFromDatabaseforCity(String cityName,int provinceid){
+        int result = 0;
         List<City> cityList = DataSupport.where("provinceid = ?", String.valueOf(provinceid)).find(City.class);
         if (cityList.size() > 0) {
 
             for (City city : cityList) {
-                if (city.getCityName() ==  cityName){
-                    result = city;
+                if (cityName.contains(city.getCityName().toString())){
+                    result = city.getId();
+                    Log.i(TAG, "QueryFromDatabaseforCity: true"+city.getCityName());
                     break;
                 }
             }
         }
         return result;
     }
-    public static County QueryFromDatabaseforCounty(String countyName,int cityid){
-        County result = null;
+    public static String QueryFromDatabaseforCounty(String countyName,int cityid){
+        String result = null;
         List<County> countyList = DataSupport.where("cityId = ?", String.valueOf(cityid)).find(County.class);
         if (countyList.size() > 0) {
             for (County county : countyList) {
-                if(county.getCountyName() == countyName){
-                    result = county;
+                if(countyName.contains(county.getCountyName().toString())){
+                    result = county.getWeatherId();
+                    Log.i(TAG, "QueryFromDatabaseforCounty: true"+county.getCountyName());
                     break;
                 }
             }

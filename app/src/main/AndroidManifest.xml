@@ -30,10 +30,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
-            android:name="com.baidu.lbsapi.APIKEY"
+            android:name="com.baidu.lbsapi.API_KEY"
             android:value="28ok6rKR6UPFGEinvWbUO0cGQpIHdb2w" />
 
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.MainActivity"
+            android:theme="@style/Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -61,10 +62,6 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote"></service>
-        <service
-            android:name=".service.Location"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

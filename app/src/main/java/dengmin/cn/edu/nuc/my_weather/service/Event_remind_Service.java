@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import org.litepal.crud.DataSupport;
 
@@ -28,6 +29,8 @@ import dengmin.cn.edu.nuc.my_weather.db.Event;
 
 public class Event_remind_Service extends Service {
     private List<Event> eventList;
+
+    private static final String TAG = "Event_remind_Service";
     public Event_remind_Service() {
     }
 
@@ -38,11 +41,12 @@ public class Event_remind_Service extends Service {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public int onStartCommand(Intent intent, int flags, int startId) {
         Query_event_remindtime();
+        Log.i(TAG, "remindservice invoke");
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int once = 24*60*60*1000;
         long triggerAtTime = SystemClock.elapsedRealtime()+once;
         Intent intent1 = new Intent(this,Auto_Update_Service.class);
-        PendingIntent pi = PendingIntent.getService(Event_remind_Service.this,0,intent,0);
+        PendingIntent pi = PendingIntent.getService(Event_remind_Service.this,0,intent1,0);
         manager.cancel(pi);
         //设置闹钟的执行模式，间隔时间和行为
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,triggerAtTime,pi);
@@ -88,14 +92,23 @@ public class Event_remind_Service extends Service {
                 case "仅一次":
                     DataSupport.delete(Event.class,event.getId());
                     break;
-                case "一小时":
-                    event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
-                            +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)+1));
+                case "每周":
+                    event.setData(String.valueOf(calendar.get(Calendar.YEAR))+"-"+String.valueOf(calendar.get(Calendar.MONTH)+1)
+                            +"-"+String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)+7));
                     break;
-                case "两小时":
-                    event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
-                            +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)+1));
+                case "每月":
+                    if(calendar.get(Calendar.MONTH+1)!=12) {
+                        event.setData(String.valueOf(calendar.get(Calendar.YEAR))+"-"+String.valueOf(calendar.get(Calendar.MONTH)+2)
+                                +"-"+String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+                    }else {
+                        event.setData(String.valueOf(calendar.get(Calendar.YEAR)+1)+"-"+"01"
+                                +"-"+String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+                    }
                     break;
+                case "每天":
+                    if(calendar.get(Calendar.DAY_OF_MONTH)==365){
+
+                    }
             }
             event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
                     +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));

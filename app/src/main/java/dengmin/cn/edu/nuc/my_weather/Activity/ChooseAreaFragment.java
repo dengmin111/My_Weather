@@ -15,18 +15,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-
-import dengmin.cn.edu.nuc.my_weather.R;
-import dengmin.cn.edu.nuc.my_weather.db.City;
-import dengmin.cn.edu.nuc.my_weather.db.County;
-import dengmin.cn.edu.nuc.my_weather.db.Province;
-import dengmin.cn.edu.nuc.my_weather.util.GetAreaWithGSON;
-import dengmin.cn.edu.nuc.my_weather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
 
@@ -34,13 +25,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.Result;
-
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import dengmin.cn.edu.nuc.my_weather.R;
+import dengmin.cn.edu.nuc.my_weather.db.City;
+import dengmin.cn.edu.nuc.my_weather.db.County;
+import dengmin.cn.edu.nuc.my_weather.db.Province;
+import dengmin.cn.edu.nuc.my_weather.util.GetAreaWithGSON;
+import dengmin.cn.edu.nuc.my_weather.util.HttpUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-
-import static android.app.Activity.RESULT_OK;
 
 public class ChooseAreaFragment extends Fragment {
 
@@ -51,15 +46,14 @@ public class ChooseAreaFragment extends Fragment {
     public static final int LEVEL_CITY = 1;
 
     public static final int LEVEL_COUNTY = 2;
+    @InjectView(R.id.title_text)
+    TextView titleText;
+    @InjectView(R.id.back_btn)
+    Button backBtn;
+    @InjectView(R.id.list_view)
+    ListView listView;
 
     private ProgressDialog progressDialog;
-
-    private TextView titleText;
-
-    private Button backButton;
-
-    private ListView listView;
-
     private ArrayAdapter<String> adapter;
 
     private List<String> dataList = new ArrayList<>();
@@ -72,16 +66,17 @@ public class ChooseAreaFragment extends Fragment {
 
     private View view;
     private String cityName;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.choose_area, container, false);
-        titleText =  view.findViewById(R.id.title_text);
-        backButton = view.findViewById(R.id.back_btn);
-        listView = view.findViewById(R.id.list_view);
+        ButterKnife.inject(this, view);
+
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
         Log.i(TAG, "onCreateView: invoke");
+
         return view;
     }
 
@@ -98,34 +93,38 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     cityName = cityList.get(position).getCityName();
                     queryCounties();
-                }else if(currentLevel == LEVEL_COUNTY){
-                    String  weatherId = countyList.get(position).getWeatherId();
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String weatherId = countyList.get(position).getWeatherId();
                     String countyName = countyList.get(position).getCountyName();
 
                     SharedPreferences.Editor editor = getActivity().getSharedPreferences("data", Context.MODE_PRIVATE).edit();
-                    editor.putString("weatherId",weatherId);
-                    editor.putString("cityName",cityName);
-                    editor.putString("countyName",countyName);
+                    editor.putString("weatherId", weatherId);
+                    editor.putString("cityName", cityName);
+                    editor.putString("countyName", countyName);
                     editor.apply();
 
                     Intent intent = getActivity().getIntent();
-                    if(weatherId != null){
+                    if (weatherId != null) {
                         getActivity().setResult(Activity.RESULT_OK);
-                    }else {
+                    } else {
                         getActivity().setResult(Activity.RESULT_CANCELED);
                     }
-                    Log.i(TAG, "onItemClick: "+weatherId+"|"+countyName+"|"+cityName);
+                    Log.i(TAG, "onItemClick: " + weatherId + "|" + countyName + "|" + cityName);
                     getActivity().finish();
                 }
             }
         });
-        backButton.setOnClickListener(new View.OnClickListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentLevel == LEVEL_COUNTY) {
                     queryCities();
                 } else if (currentLevel == LEVEL_CITY) {
                     queryProvinces();
+                }else if (currentLevel == LEVEL_PROVINCE){
+                    Toast.makeText(getActivity(),"失败",Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getActivity(),mWeather.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -138,7 +137,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryProvinces() {
         titleText.setText("中国");
-        backButton.setVisibility(View.VISIBLE);
+        backBtn.setVisibility(View.INVISIBLE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
             dataList.clear();
@@ -159,8 +158,8 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
-        backButton.setVisibility(View.VISIBLE);
-        Log.i(TAG, "provinceId = "+selectedProvince.getId());
+        backBtn.setVisibility(View.VISIBLE);
+        Log.i(TAG, "provinceId = " + selectedProvince.getId());
         cityList = DataSupport.where("provinceId = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {
             dataList.clear();
@@ -173,7 +172,7 @@ public class ChooseAreaFragment extends Fragment {
         } else {
             int provinceCode = selectedProvince.getProvinceCode();
             String address = "http://guolin.tech/api/china/" + provinceCode;
-            Log.i(TAG, "queryCities: address"+address);
+            Log.i(TAG, "queryCities: address" + address);
             queryFromServer(address, "city");
         }
     }
@@ -183,9 +182,9 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryCounties() {
         titleText.setText(selectedCity.getCityName());
-        backButton.setVisibility(View.VISIBLE);
+        backBtn.setVisibility(View.VISIBLE);
         countyList = DataSupport.where("cityId = ?", String.valueOf(selectedCity.getId())).find(County.class);
-        Log.i(TAG, "queryProvinces: listsize: "+provinceList.size());
+        Log.i(TAG, "queryProvinces: listsize: " + provinceList.size());
         if (countyList.size() > 0) {
             dataList.clear();
             for (County county : countyList) {
@@ -210,24 +209,24 @@ public class ChooseAreaFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
-                switch (type){
+                switch (type) {
                     case "province":
-                        Log.i(TAG, "onResponse: type : "+type);
+                        Log.i(TAG, "onResponse: type : " + type);
                         result = GetAreaWithGSON.handleProvinceResponse(responseText);
                         break;
                     case "city":
-                        Log.i(TAG, "onResponse: type : "+type);
+                        Log.i(TAG, "onResponse: type : " + type);
                         result = GetAreaWithGSON.handleCityResponse(responseText, selectedProvince.getId());
                         break;
                     case "county":
-                        Log.i(TAG, "onResponse: type : "+type);
+                        Log.i(TAG, "onResponse: type : " + type);
                         result = GetAreaWithGSON.handleCountyResponse(responseText, selectedCity.getId());
                         break;
                     default:
-                        Log.i(TAG, "onResponse: default"+type);
+                        Log.i(TAG, "onResponse: default" + type);
                         break;
                 }
-                Log.i(TAG, "result:"+String.valueOf(result));
+                Log.i(TAG, "result:" + String.valueOf(result));
                 if (result) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -281,4 +280,9 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+    }
 }

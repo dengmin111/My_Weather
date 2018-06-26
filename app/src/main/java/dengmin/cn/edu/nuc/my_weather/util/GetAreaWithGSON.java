@@ -4,11 +4,16 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
+import dengmin.cn.edu.nuc.my_weather.db.Event;
+import dengmin.cn.edu.nuc.my_weather.gson.EventToGson;
 import dengmin.cn.edu.nuc.my_weather.gson.Weather;
 import dengmin.cn.edu.nuc.my_weather.db.City;
 import dengmin.cn.edu.nuc.my_weather.db.County;
@@ -17,11 +22,12 @@ import dengmin.cn.edu.nuc.my_weather.db.Province;
 
 public class GetAreaWithGSON {
 
-    private static final String TAG = "test";
+    private static final String TAG = "GetAreaWithGSON";;
     public static boolean handleProvinceResponse(String response) {
         if (!TextUtils.isEmpty(response)) {
             try {
                 JSONArray allProvinces = new JSONArray(response);
+                Log.i(TAG, "handleProvinceResponse: "+allProvinces.length());
                 for (int i = 0; i < allProvinces.length(); i++) {
                     JSONObject provinceObject = allProvinces.getJSONObject(i);
                     Province province = new Province();
@@ -93,5 +99,46 @@ public class GetAreaWithGSON {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getEventGsonString(List<Event> eventList){
+        try{
+            JsonArray array = new JsonArray();
+            for (Event event : eventList){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("title",event.getTitle());
+                jsonObject.put("content",event.getContent());
+                jsonObject.put("data",event.getData());
+                jsonObject.put("time",event.getTime());
+                jsonObject.put("hz",event.getHz());
+                array.add(String.valueOf(jsonObject));
+            }
+            Log.i(TAG, "getEventGsonString: "+array.getAsString());
+            return array.getAsString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static boolean handleEventResponse(String response) {
+        if (!TextUtils.isEmpty(response)) {
+            try {
+                JSONArray allEvents = new JSONArray(response);
+                for (int i = 0; i < allEvents.length(); i++) {
+                    JSONObject eventyObject = allEvents.getJSONObject(i);
+                    Event event = new Event();
+                    event.setTitle(eventyObject.getString("title"));
+                    event.setContent(eventyObject.getString("content"));
+                    event.setData(eventyObject.getString("data"));
+                    event.setHz(eventyObject.getString("hz"));
+                    event.setTime(eventyObject.getString("time"));
+                    event.save();
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

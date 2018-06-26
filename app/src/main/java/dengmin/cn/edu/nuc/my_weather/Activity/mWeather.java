@@ -55,30 +55,32 @@ public class mWeather extends AppCompatActivity {
     @InjectView(R.id.weather_layout)
     ScrollView weatherLayout;
     @InjectView(R.id.go_to_event)
-    RadioButton goToEvent;
+    ImageButton goToEvent;
     @InjectView(R.id.go_to_weather)
-    RadioButton goToWeather;
+    ImageButton goToWeather;
     @InjectView(R.id.go_to_setting)
-    RadioButton goToSetting;
+    ImageButton goToSetting;
     private static final String TAG = "mWeather";
     @InjectView(R.id.select_city_btn)
     ImageButton selectCityBtn;
     @InjectView(R.id.swipe_ref)
     SwipeRefreshLayout swipeRef;
     private String weatherId;
-
+    private SharedPreferences pref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         ButterKnife.inject(this);
 
-        Log.i(TAG, "onCreate: run");
-        SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
+
+        pref = getSharedPreferences("data", MODE_PRIVATE);
         weatherId = pref.getString("weatherId", null);
+        Log.i(TAG, "onCreate: "+weatherId);
         String weatherString = pref.getString("weather", null);
         if (weatherId == null) {
             selectArea();
+            Log.i(TAG, "selectArea on");
         }
         Log.i(TAG, "selectArea over");
         if (weatherString != null) {
@@ -86,7 +88,7 @@ public class mWeather extends AppCompatActivity {
             weatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
-            Log.i(TAG, "onCreate: weatherId0 = " + weatherId);
+            Log.i(TAG, "onCreate: weatherId = " + weatherId);
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
@@ -147,6 +149,10 @@ public class mWeather extends AppCompatActivity {
 
         String weatherInfo = weather.now.more.info;
 
+        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+        editor.putString("weather_today",weatherInfo);
+        editor.apply();
+
         cityTitle.setText(cityName);
         updateTimeTitle.setText(updataTime);
         degreeTv.setText(degree);
@@ -175,6 +181,7 @@ public class mWeather extends AppCompatActivity {
         carWashTv.setText(carwarsh);
         sportTv.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        swipeRef.setRefreshing(false);
     }
 
     @OnClick({R.id.go_to_event, R.id.go_to_weather, R.id.go_to_setting, R.id.select_city_btn})
@@ -207,19 +214,11 @@ public class mWeather extends AppCompatActivity {
         switch (requestCode) {
             case 5:
                 if (resultCode == RESULT_OK) {
-                    setWeatherID(data);
-                    onRestart();
+                    requestWeather(pref.getString("weatherId",null));
                 } else {
                     Toast.makeText(mWeather.this, "失败", Toast.LENGTH_LONG).show();
                 }
         }
     }
 
-    public void setWeatherID(Intent data) {
-        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
-        editor.putString("weatherId", data.getStringExtra("weatherId"));
-        editor.putString("cityName", data.getStringExtra("cityName"));
-        editor.putString("countyName", data.getStringExtra("countyName"));
-        editor.apply();
-    }
 }

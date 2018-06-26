@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.mWeather"
-    android:background="@color/colorPrimary">
+    android:background="#03a9f4">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_ref"
@@ -32,6 +32,8 @@
                 <include layout="@layout/forecast" />
 
                 <include layout="@layout/suggestion" />
+
+                <include layout="@layout/padding"/>
             </LinearLayout>
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>

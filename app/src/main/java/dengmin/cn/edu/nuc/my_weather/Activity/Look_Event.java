@@ -1,6 +1,7 @@
 package dengmin.cn.edu.nuc.my_weather.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
@@ -32,19 +34,19 @@ import dengmin.cn.edu.nuc.my_weather.db.Event;
 public class Look_Event extends AppCompatActivity {
 
     @InjectView(R.id.go_to_event)
-    RadioButton goToEvent;
+    ImageButton goToEvent;
     @InjectView(R.id.go_to_weather)
-    RadioButton goToWeather;
+    ImageButton goToWeather;
     @InjectView(R.id.go_to_setting)
-    RadioButton goToSetting;
+    ImageButton goToSetting;
     @InjectView(R.id.data_tv_event)
     TextView dataTvEvent;
     @InjectView(R.id.weather_tv_event)
     TextView weatherTvEvent;
     @InjectView(R.id.new_event)
-    Button newEvent;
+    ImageButton newEvent;
     @InjectView(R.id.select_event)
-    Button selectEvent;
+    ImageButton selectEvent;
     @InjectView(R.id.look_event_lv)
     ListView lookEventLv;
 
@@ -82,6 +84,9 @@ public class Look_Event extends AppCompatActivity {
         data = String.valueOf(calendar.get(Calendar.YEAR)) + "-" + String.valueOf(calendar.get(Calendar.MONTH) + 1)
                 + "-" + String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         Log.i(TAG, "onCreate: " + data);
+        dataTvEvent.setText(data);
+        SharedPreferences preferences = getSharedPreferences("data",MODE_PRIVATE);
+        weatherTvEvent.setText(preferences.getString("weather_today",null));
         lookEventLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -130,11 +135,8 @@ public class Look_Event extends AppCompatActivity {
     }
     public void QueryItem(String title,String content,String time,String data){
         Log.i(TAG, "QueryItem: "+title+" "+content+" "+time+" "+data);
-        Cursor cursor = DataSupport.findBySQL("select * from event where title like "+title+" and content like "+content+" and data like "+data+" and time like "+time+";");
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(Look_Event.this, R.layout.event_item, cursor,
-                new String[]{"_id", "title", "content", "data","time"},
-                new int[]{R.id.id_tv_look,R.id.title_tv_look,R.id.content_tv_look,R.id.data_tv_look,R.id.time_tv_look});
-        lookEventLv.setAdapter(adapter);
+        List<Event> eventList = DataSupport.where("title like "+title+";"+"content like"+content).find(Event.class);
+        displayList(eventList);
     }
     public void displayList(List<Event> eventList){
         lookEventLv.clearAnimation();

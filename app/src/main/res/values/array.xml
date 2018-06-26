@@ -2,9 +2,9 @@
 <resources>
     <string-array name="spingarr1">
         <item>仅一次</item>
+        <item>每天</item>
         <item>每周</item>
         <item>每月</item>
-        <item>工作日</item>
     </string-array>
     <string-array name="spingarr2">
         <item>半小时</item>

@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="70dp"
     android:layout_gravity="bottom"
+    android:orientation="horizontal"
+    android:background="@color/background"
     android:layout_weight="1">
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="计划"
-            android:id="@+id/go_to_event"
-            />
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="天气"
-            android:id="@+id/go_to_weather"
-            />
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="设置"
-            android:id="@+id/go_to_setting"
-            />
-    </RadioGroup>
+
+    <ImageButton
+        android:id="@+id/go_to_event"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@mipmap/event_act"
+        android:background="#fff"
+        android:scaleType="fitXY"
+        android:padding="15dp"
+        android:layout_weight="1"
+        />
+    <ImageButton
+        android:id="@+id/go_to_weather"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@mipmap/weather_act"
+        android:background="#fff"
+        android:scaleType="fitXY"
+        android:padding="15dp"
+        android:layout_weight="1"
+        />
+    <ImageButton
+        android:id="@+id/go_to_setting"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@mipmap/setting_act"
+        android:background="#fff"
+        android:scaleType="fitXY"
+        android:padding="15dp"
+        />
+
+
 
 </LinearLayout>

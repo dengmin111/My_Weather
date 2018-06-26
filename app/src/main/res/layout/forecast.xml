@@ -9,8 +9,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
+        android:layout_marginLeft="5dp"
         android:textColor="#fff"/>
     <LinearLayout
+        android:layout_margin="5dp"
         android:id="@+id/forecast_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

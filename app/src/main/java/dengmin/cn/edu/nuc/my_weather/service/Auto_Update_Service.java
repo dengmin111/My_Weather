@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -26,6 +27,7 @@ import okhttp3.Response;
 
 public class Auto_Update_Service extends Service {
     private Weather weather;
+    private static final String TAG = "Auto_Update_Service";
     public Auto_Update_Service() {
     }
 
@@ -34,10 +36,11 @@ public class Auto_Update_Service extends Service {
         return null;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         updateWeather();
+        Log.i(TAG, "updataservice invoke ");
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int once = 4*60*60*1000;
         long triggerAtTime = SystemClock.elapsedRealtime()+once;
@@ -60,6 +63,7 @@ public class Auto_Update_Service extends Service {
     }
     //更新天气
     private void updateWeather(){
+        Log.i(TAG, "updateWeather: 天气已更新");
         SharedPreferences prefs = getSharedPreferences("data",MODE_PRIVATE);
         String weatherId = prefs.getString("weatherId",null);
         if(weatherId!=null){
@@ -77,27 +81,11 @@ public class Auto_Update_Service extends Service {
                     if(weather!= null&&"ok".equals(weather.status)){
                         SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
                         editor.putString("weather",responseText);
+                        editor.putString("weather_today",weather.now.more.info);
                         editor.apply();
                     }
                 }
             });
         }
-    }
-    private void updateBingpic(){
-        String requestBingPic = "http://guolin.tech/api/bing_pic";
-        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String bingPic = response.body().toString();
-                SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
-                editor.putString("bing_pic",bingPic);
-                editor.apply();
-            }
-        });
     }
 }
