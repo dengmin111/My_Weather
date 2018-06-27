@@ -106,9 +106,14 @@ public class Event_remind_Service extends Service {
                     }
                     break;
                 case "每天":
-                    if(calendar.get(Calendar.DAY_OF_MONTH)==365){
-
+                    if(calendar.get(Calendar.DAY_OF_YEAR)==365){
+                        event.setData(String.valueOf(calendar.get(Calendar.YEAR)+1)+"-"+String.valueOf(calendar.get(Calendar.MONTH)+2)
+                                +"-"+String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+                    }else {
+                        event.setData(String.valueOf(calendar.get(Calendar.YEAR))+"-"+String.valueOf(calendar.get(Calendar.MONTH)+2)
+                                +"-"+String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)+1));
                     }
+
             }
             event.setData(String.valueOf(calendar.get(Calendar.YEAR))+String.valueOf(calendar.get(Calendar.MONTH)+1)
                     +String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));

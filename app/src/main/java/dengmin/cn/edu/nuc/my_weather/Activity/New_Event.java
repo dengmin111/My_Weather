@@ -24,6 +24,8 @@ import org.litepal.crud.DataSupport;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.security.auth.login.LoginException;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -54,8 +56,6 @@ public class New_Event extends AppCompatActivity {
     @InjectView(R.id.data_tv_new)
     TextView dataTvNew;
 
-    private String hz;
-    private String remindtime;
 
     private Intent intent;
     private String _id;
@@ -63,7 +63,7 @@ public class New_Event extends AppCompatActivity {
     //temp = 0 执行新建功能，temp = 1执行查找功能,temp=2对某一条记录进行具体操作
     private String TEMP = "0";
 
-    int remind_time;
+    private int remind_time;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,41 +84,19 @@ public class New_Event extends AppCompatActivity {
                 _id = intent.getStringExtra("_id");
                 List<Event> eventList = DataSupport.where("id=?", _id).find(Event.class);
                 Log.i(TAG, "onCreate: eventlist size:" + eventList.size());
-                for (Event event : eventList) {
-                    titleEd.setText(event.getTitle());
-                    inputConent.setText(event.getContent());
-                    timeTvNew.setText(event.getTime());
-                    dataTvNew.setText(event.getData());
-                    setSpinnerItemSelectedByValue(selectHz, event.getHz());
-                    setSpinnerItemSelectedByValue(selectTime, event.getRemind_time());
-                    Log.i(TAG, "onCreate: " + event.getTitle());
-                }
+                Log.i(TAG, "onCreate: id"+_id);
+                Event event = eventList.get(0);
+                titleEd.setText(event.getTitle());
+                inputConent.setText(event.getContent());
+                timeTvNew.setText(event.getTime());
+                dataTvNew.setText(event.getData());
+                setSpinnerItemSelectedByValue(selectHz, event.getHz());
+                setSpinnerItemSelectedByValue(selectTime, event.getRemind_time());
+                Log.i(TAG, "onCreate: " + event.getTitle());
+
                 break;
             default:
         }
-        selectTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                remindtime = (String) selectTime.getSelectedItem();
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        selectHz.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                hz = (String) selectHz.getSelectedItem();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     @OnClick({R.id.data_btn_new, R.id.time_btn_new, R.id.overNew_btn, R.id.reset_btn})
@@ -154,6 +132,7 @@ public class New_Event extends AppCompatActivity {
                         setResult(RESULT_OK, intent);
                         break;
                     case "1":
+                        //传递查询值
                         intent.putExtra("data", dataTvNew.getText().toString());
                         intent.putExtra("time", timeTvNew.getText().toString());
                         intent.putExtra("title", titleEd.getText().toString());
@@ -168,8 +147,8 @@ public class New_Event extends AppCompatActivity {
                         values.put("time", timeTvNew.getText().toString());
                         values.put("title", titleEd.getText().toString());
                         values.put("content", inputConent.getText().toString());
-                        values.put("hz", hz);
-                        values.put("remind_time", remindtime);
+                        values.put("hz", selectHz.getSelectedItem().toString());
+                        values.put("remind_time", selectTime.getSelectedItem().toString());
                         DataSupport.update(Event.class, values, Long.parseLong(_id));
                         setResult(RESULT_OK,intent);
                         break;
@@ -209,8 +188,9 @@ public class New_Event extends AppCompatActivity {
             event.setTime(timeTvNew.getText().toString());
             event.setTitle(titleEd.getText().toString());
             event.setContent(inputConent.getText().toString());
-            event.setHz(hz);
-            event.setRemind_time(remindtime);
+            event.setHz(selectHz.getSelectedItem().toString());
+            event.setRemind_time(selectTime.getSelectedItem().toString());
+            result_reminad_time();
             event.setRemindtime(remind_time);
             event.save();
         }
@@ -221,6 +201,8 @@ public class New_Event extends AppCompatActivity {
         SpinnerAdapter apsAdapter = spinner.getAdapter(); //得到SpinnerAdapter对象
         int k = apsAdapter.getCount();
         for (int i = 0; i < k; i++) {
+            Log.i(TAG, "setSpinnerItemSelectedByValue: "+value);
+            //if (value==apsAdapter.getItem(i).toString()) {
             if (value.equals(apsAdapter.getItem(i).toString())) {
                 spinner.setSelection(i, true);// 默认选中项
                 break;
@@ -228,6 +210,7 @@ public class New_Event extends AppCompatActivity {
         }
     }
     public void result_reminad_time(){
+        String remindtime = selectTime.getSelectedItem().toString();
         switch (remindtime){
             case "半小时":
                 remind_time = remind_time-3000;

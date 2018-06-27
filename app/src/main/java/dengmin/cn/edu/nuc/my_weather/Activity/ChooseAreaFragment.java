@@ -13,9 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,19 +38,22 @@ import okhttp3.Response;
 
 public class ChooseAreaFragment extends Fragment {
 
-    private static final String TAG = "test";
+    private static final String TAG = "ChooseAreaFragment";
 
     public static final int LEVEL_PROVINCE = 0;
 
     public static final int LEVEL_CITY = 1;
 
     public static final int LEVEL_COUNTY = 2;
-    @InjectView(R.id.title_text)
-    TextView titleText;
-    @InjectView(R.id.back_btn)
-    Button backBtn;
+
+
     @InjectView(R.id.list_view)
     ListView listView;
+    @InjectView(R.id.title_text)
+    TextView titleText;
+    @InjectView(R.id.back)
+    ImageButton backBtn;
+
 
     private ProgressDialog progressDialog;
     private ArrayAdapter<String> adapter;
@@ -83,6 +85,7 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,10 +124,6 @@ public class ChooseAreaFragment extends Fragment {
                     queryCities();
                 } else if (currentLevel == LEVEL_CITY) {
                     queryProvinces();
-                }else if (currentLevel == LEVEL_PROVINCE){
-                    Toast.makeText(getActivity(),"失败",Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(getActivity(),mWeather.class);
-                    startActivity(intent);
                 }
             }
         });
@@ -137,7 +136,6 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryProvinces() {
         titleText.setText("中国");
-        backBtn.setVisibility(View.INVISIBLE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
             dataList.clear();
@@ -158,7 +156,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
-        backBtn.setVisibility(View.VISIBLE);
+
         Log.i(TAG, "provinceId = " + selectedProvince.getId());
         cityList = DataSupport.where("provinceId = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {
@@ -182,7 +180,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryCounties() {
         titleText.setText(selectedCity.getCityName());
-        backBtn.setVisibility(View.VISIBLE);
+
         countyList = DataSupport.where("cityId = ?", String.valueOf(selectedCity.getId())).find(County.class);
         Log.i(TAG, "queryProvinces: listsize: " + provinceList.size());
         if (countyList.size() > 0) {
@@ -285,4 +283,19 @@ public class ChooseAreaFragment extends Fragment {
         super.onDestroyView();
         ButterKnife.reset(this);
     }
+
+//    @OnClick(R.id.back_btn)
+//    public void onViewClicked() {
+//        Log.i(TAG, "onViewClicked: invoked");
+//        if (currentLevel == LEVEL_COUNTY) {
+//            queryCities();
+//        } else if (currentLevel == LEVEL_CITY) {
+//            queryProvinces();
+//        } else if (currentLevel == LEVEL_PROVINCE) {
+//            Log.i(TAG, "onClick: " + currentLevel);
+//            Toast.makeText(getActivity(), "失败", Toast.LENGTH_LONG).show();
+//            Intent intent = new Intent(getActivity(), mWeather.class);
+//            startActivity(intent);
+//        }
+//    }
 }

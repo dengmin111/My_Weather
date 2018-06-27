@@ -5,10 +5,16 @@
     <!--顶部栏 -->
     <ImageButton
         android:id="@+id/select_city_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_back"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@mipmap/caidan" />
     <TextView
         android:id="@+id/city_title"
         android:layout_width="wrap_content"

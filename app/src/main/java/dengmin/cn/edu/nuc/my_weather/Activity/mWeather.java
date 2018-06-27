@@ -201,6 +201,7 @@ public class mWeather extends AppCompatActivity {
                 break;
             case R.id.select_city_btn:
                 selectArea();
+                Log.i(TAG, "onViewClicked: select_Area");
         }
     }
 

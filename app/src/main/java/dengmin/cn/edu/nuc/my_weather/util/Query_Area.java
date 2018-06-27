@@ -40,12 +40,12 @@ public class Query_Area {
                         Log.i(TAG, "onResponse: result 1"+result);
                         break;
                     case "city":
-                        Log.i(TAG, "onResponse: type : "+type);
+                        Log.i(TAG, "onResponse: type 2: "+type);
                         result = GetAreaWithGSON.handleCityResponse(responseText, id);
                         Log.i(TAG, "onResponse: result 2"+result);
                         break;
                     case "county":
-                        Log.i(TAG, "onResponse: type : "+type);
+                        Log.i(TAG, "onResponse: type 3: "+type);
                         result = GetAreaWithGSON.handleCountyResponse(responseText, id);
                         Log.i(TAG, "onResponse: result 3"+result);
                         break;

@@ -90,6 +90,7 @@ public class Look_Event extends AppCompatActivity {
         lookEventLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(TAG, "onItemClick: position"+position);
                 View v = lookEventLv.getChildAt(position);
                 TextView id1 = v.findViewById(R.id.id_tv_look);
                 String id2 = id1.getText().toString();
@@ -135,7 +136,7 @@ public class Look_Event extends AppCompatActivity {
     }
     public void QueryItem(String title,String content,String time,String data){
         Log.i(TAG, "QueryItem: "+title+" "+content+" "+time+" "+data);
-        List<Event> eventList = DataSupport.where("title like "+title+";"+"content like"+content).find(Event.class);
+        List<Event> eventList = DataSupport.where("title like ?","%"+title+"%").find(Event.class);
         displayList(eventList);
     }
     public void displayList(List<Event> eventList){
